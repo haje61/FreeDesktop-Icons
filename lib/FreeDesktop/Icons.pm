@@ -108,7 +108,7 @@ of all contexts found in $theme.
 
 sub availableContexts {
 	my ($self, $theme, $name, $size) = @_;
-	my $t = $self->GetTheme($theme);
+	my $t = $self->getTheme($theme);
 	my %found = ();
 	if ((not defined $name) and (not defined $size)) {
 		my @names = keys %$t;
@@ -152,7 +152,7 @@ sub availableContexts {
 			}
 		}
 	}
-	my $parent = $self->ParentTheme($theme);
+	my $parent = $self->parentTheme($theme);
 	if (defined $parent) {
 		my @contexts = $self->availableContexts($parent, $name, $size);
 		for (@contexts) {
@@ -173,7 +173,7 @@ you get a list of all available icons. Watch out, it might be pretty long.
 
 sub availableIcons {
 	my ($self, $theme, $size, $context) = @_;
-	my $t = $self->GetTheme($theme);
+	my $t = $self->getTheme($theme);
 
 	my @names = keys %$t;
 	my %matches = ();
@@ -202,7 +202,7 @@ sub availableIcons {
 			}
 		}
 	}
-	my $parent = $self->ParentTheme($theme);
+	my $parent = $self->parentTheme($theme);
 	if (defined $parent) {
 		my @icons = $self->availableIcons($parent, $size, $context);
 		for (@icons) {
@@ -234,7 +234,7 @@ of all contexts found in $theme.
 
 sub availableSizes {
 	my ($self, $theme, $name, $context) = @_;
-	my $t = $self->GetTheme($theme);
+	my $t = $self->getTheme($theme);
 	return () unless defined $t;
 
 	my %found = ();
@@ -275,7 +275,7 @@ sub availableSizes {
 			}
 		}
 	}
-	my $parent = $self->ParentTheme($theme);
+	my $parent = $self->parentTheme($theme);
 	if (defined $parent) {
 		my @sizes = $self->availableSizes($parent, $name, $context);
 		for (@sizes) {
@@ -411,12 +411,12 @@ sub FindLibImage {
 		return undef
 	}
 
-	my $index = $self->GetTheme($theme);
+	my $index = $self->getTheme($theme);
 	my $file;
 	$file = $self->FindImageS($index->{$name}, $size, $context, $resize,) if exists $index->{$name};
 	return $file if defined $file;
 
-	my $parent = $self->ParentTheme($theme);
+	my $parent = $self->parentTheme($theme);
 	$file = $self->FindLibImage($name, $size, $context, $resize, $parent) if defined $parent;
 	return $file if defined $file;
 
@@ -513,7 +513,14 @@ sub getPath {
 	}
 }
 
-sub GetTheme {
+=item B<getTheme>I<($theme)>
+
+Returns the theme data hash of I<$theme>.
+Returns undef if I<$theme> is not found.
+
+=cut
+
+sub getTheme {
 	my ($self, $name) = @_;
 	my $pool = $self->{THEMEPOOL};
 	if (exists $pool->{$name}) {
@@ -527,16 +534,6 @@ sub GetTheme {
 		} else {
 			return undef
 		}
-	}
-}
-
-sub GetThemePath {
-	my ($self, $theme) = @_;
-	my $t = $self->{THEMES};
-	if (exists $t->{$theme}) {
-		return $t->{$theme}->{path}
-	} else {
-		warn "Icon theme $theme not found"
 	}
 }
 
@@ -585,7 +582,7 @@ sub LoadThemeFile {
 	}
 }
 
-sub ParentTheme {
+sub parentTheme {
 	my ($self, $theme) = @_;
 	return $self->{THEMES}->{$theme}->{'general'}->{'Inherits'};
 }
@@ -613,6 +610,17 @@ sub size {
 	my $self = shift;
 	$self->{SIZE} = shift if @_;
 	return $self->{SIZE}
+}
+
+=item B<themeExists>I<(?$theme?)>
+
+returns a boolean.
+
+=cut
+
+sub themeExists {
+	my ($self, $theme) = @_;
+	return exists $self->{THEMES}->{$theme}
 }
 
 =item B<theme>I<(?$theme?)>
