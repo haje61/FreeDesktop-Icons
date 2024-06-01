@@ -5,6 +5,7 @@ use warnings;
 
 my %prereq = (
 	'File::Basename'				    => '2.85',
+	'Test::Deep'            => '1.204',
 );
 
 WriteMakefile(
